@@ -47,14 +47,20 @@ var getPerson = function(req,res) {
 
 var deletePerson = function(req, res) {
   if (req.person) {
-    debug("Removing", req.person.firstName, req.person.lastName);
-    _.remove(personData, {"id" : req});
-    debug("personData=", personData);
-    var response = { message: "Deleted successfully" };
-    res.status(200).jsonp(response);
+    debug("Removing", req.person.id, req.person.firstName, req.person.lastName);
+    var removedObject = _.remove(personData, req.person);
+    var response = "";
+    if (removedObject) {
+         response = { message: "Deleted successfully" };
+         res.status(200).jsonp(response);
+    }
+    else {
+         response = { message: "delete unsuccessful" };
+         res.status(404).jsonp(response);
+    }    
   }
   else {
-    var response = { message: "Unrecognized person identifier"};
+     response = { message: "Unrecognized person identifier"};
     res.status(404).jsonp(response);
   }
 };
@@ -81,6 +87,9 @@ app.get('/',function(req,res) {
 });
 
 app.get('/person/:personId',getPerson);
+app.delete('/person/delete/:personId', deletePerson);
+app.post('/person', insertPerson);
+
 app.param('personId', function(req, res, next, personId){
     debug("personId found:", personId);
     var person = _.find(personData, function(id){
@@ -90,6 +99,3 @@ app.param('personId', function(req, res, next, personId){
     req.person = person;
     next();
 });
-
-app.delete('/person/delete/:personId', deletePerson);
-app.post('/person', insertPerson);
