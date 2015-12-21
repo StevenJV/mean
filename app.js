@@ -48,8 +48,8 @@ var getPerson = function(req,res) {
 var deletePerson = function(req, res) {
   if (req.person) {
     debug("Removing", req.person.firstName, req.person.lastName);
-    _.remove(personData, {"id" : 6});
-    debug("personData now =\n", personData);
+    _.remove(personData, {"id" : req});
+    debug("personData=", personData);
     var response = { message: "Deleted successfully" };
     res.status(200).jsonp(response);
   }
