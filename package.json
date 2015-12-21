@@ -7,6 +7,7 @@
   "author": "Ted Neward",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.14.2",
     "debug": "^2.2.0",
     "express": "^4.13.3",
     "lodash": "^2.4.2",

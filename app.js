@@ -1,6 +1,7 @@
 var express = require('express');
 var debug = require('debug')('app');
-var _ = require('underscore-node');
+var _ = require("lodash");
+
 var app = express();
 
 var personData = [
@@ -44,6 +45,29 @@ var getPerson = function(req,res) {
     }
 };
 
+var deletePerson = function(req, res) {
+  if (req.person) {
+    debug("Removing", req.person.firstName, req.person.lastName);
+    _.remove(personData, {"id" : 6});
+    debug("personData now =\n", personData);
+    var response = { message: "Deleted successfully" };
+    res.status(200).jsonp(response);
+  }
+  else {
+    var response = { message: "Unrecognized person identifier"};
+    res.status(404).jsonp(response);
+  }
+};
+
+var insertPerson = function(req, res) {
+    var person = req.body;
+    debug("Recieved",person);
+    person.id = personData.length + 1;
+    personData.push(person);
+    res.status(200).jsonp(person);
+};
+
+
 var server = app.listen(port, function() {
 	var host = server.address().address;
 	var port = server.address().port;
@@ -56,13 +80,16 @@ app.get('/',function(req,res) {
     res.send(JSON.stringify(response));
 });
 
-app.get('/persons/:personId',getPerson);
+app.get('/person/:personId',getPerson);
 app.param('personId', function(req, res, next, personId){
     debug("personId found:", personId);
     var person = _.find(personData, function(id){
         return personId == id.id;
     });
-    debug("peson:", person);
+    debug("person:", person);
     req.person = person;
     next();
 });
+
+app.delete('/person/delete/:personId', deletePerson);
+app.post('/person', insertPerson);
